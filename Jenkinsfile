@@ -1,15 +1,19 @@
 library('piper-lib-os') _
 
-node() {
-  stage('Prepare') {
-      deleteDir()
-      checkout scm
-      setupCommonPipelineEnvironment script:this
-  }  
+stage('Prepare') {
+  node {
+    deleteDir()
+    checkout scm
+    setupCommonPipelineEnvironment script:this    
+  }
+}  
   
-  stage('Build')
+stage('Build') {
 
-  stage('Deploy Commit') {
+}
+
+stage('Deploy Commit') {
+  node {
     gctsDeploy(
       script: this,
       host: 'http://172.16.10.101:8000',
@@ -26,25 +30,5 @@ node() {
       verbose: true,
       configuration: [dummyConfig: 'dummyval']   
     )
-  }
-  
-  stage('Run Unit Test') {
-    gctsExecuteABAPUnitTests( 
-      script: this, 
-      host: 'http://172.16.10.101:8000',
-      client: '100',
-      abapCredentialsId: 'ABAPUserPasswordCredentialsId',
-      repository: 'skondekar-shubh'     
-    )
-  }
-  
-  stage('Roll Back Commit') {
-    gctsRollback( 
-      script: this,
-      host: 'http://172.16.10.101:8000',
-      client: '100',
-      abapCredentialsId: 'ABAPUserPasswordCredentialsId',
-      repository: 'skondekar-shubh'      
-    )
-  }
+  }    
 }
